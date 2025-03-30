@@ -5,8 +5,13 @@ type IUser = {
     name: string;
     email: string;
     phone: string;
-    gender: string;
-    dob: string;
+    avg_time_spent: number;
+    avg_quiz_score: number;
+    avg_confidence_score: number;
+    adaptability_score: number;
+    preferred_learning_style: string;
+    english_proficiency: number;
+    weak_topics: string[];
 };
 
 type ProfileResponse = {

@@ -6,7 +6,27 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEN_AI_API_KEY });
 
 async function generateRoadmap(req, res, next) {
 
-const { topic } =  req.body
+const { topic, adaptability_score, avg_confidence_score, avg_time_spent, english_proficiency, grade, preferred_learning_style } =  req.body
+
+var userCapabilitiesforRoadmap = {}
+
+if (adaptability_score == 0 || avg_confidence_score == 0 || avg_time_spent == 0 || english_proficiency == 0 || grade == 0 || preferred_learning_style == 0) {
+     userCapabilitiesforRoadmap = {
+        english_proficiency: 'begginner',
+        currently_studying: grade,
+        preferred_learning_style: 'mixed: videos, reading, and hands-on practice'
+    }
+    
+} else {
+    userCapabilitiesforRoadmap = {
+    adaptability_score: adaptability_score,
+    avg_confidence_score: avg_confidence_score,
+    avg_time_spent: avg_time_spent,
+    english_proficiency: english_proficiency,
+    currently_studying: grade,
+    preferred_learning_style: preferred_learning_style
+}
+}
 
 const resSchema = {
     type:Type.ARRAY,
@@ -32,10 +52,7 @@ const resSchema = {
     }
 };
 
-const prompt = `create a roadmap for studying complete ${topic} with all topics and subtopics,
-    level: beginner,
-    english_understanding_capability: 5 out of 10,
-    Grasping_Power: 4 out of 10
+const prompt = `create a roadmap for studying complete ${topic} with all topics and subtopics, where user capabalities are : ${JSON.stringify(userCapabilitiesforRoadmap)}    
 `;
 
 
@@ -66,7 +83,28 @@ return res.status(200).json({success:true, response: structuredResponse});
 }
 
 async function generateContent(req, res, next) {
-    const {topic} = req.body;
+
+    const { topic, adaptability_score, avg_confidence_score, avg_time_spent, english_proficiency, grade, preferred_learning_style } =  req.body
+
+    var userCapabilitiesforContent = {}
+
+if (adaptability_score == 0 || avg_confidence_score == 0 || avg_time_spent == 0 || english_proficiency == 0 || grade == 0 || preferred_learning_style == 0) {
+    userCapabilitiesforContent = {
+        english_proficiency: 'begginner',
+        currently_studying: grade,
+        preferred_learning_style: preferred_learning_style
+    }
+    
+} else {
+    userCapabilitiesforContent = {
+    adaptability_score: adaptability_score,
+    avg_confidence_score: avg_confidence_score,
+    avg_time_spent: avg_time_spent,
+    english_proficiency: english_proficiency,
+    currently_studying: grade,
+    preferred_learning_style: preferred_learning_style
+}
+}
     const resSchema = {
         type:Type.ARRAY,
         items: {
@@ -88,7 +126,7 @@ async function generateContent(req, res, next) {
         }
     };
     
-    const prompt = `generate complete, detailed text lesson on the topic "${topic}". generate as many subtopics as needed.`;
+    const prompt = `generate complete, detailed text lesson on the topic "${topic}". generate as many subtopics as needed, where user capabalities are : ${JSON.stringify(userCapabilitiesforContent)}`;
     
     
         

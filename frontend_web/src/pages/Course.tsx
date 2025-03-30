@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from "react-router-dom";
+import { useUser } from '../context/user.context';
 
 type Roadmap = {
     Topic_Name: string;
@@ -12,6 +13,8 @@ type Content = {
 };
 
 const Course = () => {
+    const userContext = useUser()
+    const user = userContext?.user;
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const topic = queryParams.get("topic");
@@ -28,7 +31,15 @@ const Course = () => {
                 const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/roadmap/generate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ topic: topic }),
+                    body: JSON.stringify({ 
+                        topic: topic,
+                        avg_quiz_score: user?.avg_quiz_score,
+                        avg_confidence_score: user?.avg_confidence_score,
+                        adaptability_score: user?.adaptability_score,
+                        preferred_learning_style: user?.preferred_learning_style,
+                        english_proficiency: user?.english_proficiency,
+                        weak_topics: user?.weak_topics
+                     }),
                     credentials: 'include',
                 });
                 if (!response.ok) {
@@ -58,7 +69,15 @@ const Course = () => {
                 const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/roadmap/content`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ topic: selectedTopic, subtopic: selectedSubtopic }),
+                    body: JSON.stringify({ 
+                        topic: topic,
+                        avg_quiz_score: user?.avg_quiz_score,
+                        avg_confidence_score: user?.avg_confidence_score,
+                        adaptability_score: user?.adaptability_score,
+                        preferred_learning_style: user?.preferred_learning_style,
+                        english_proficiency: user?.english_proficiency,
+                        weak_topics: user?.weak_topics
+                     }),
                     credentials: 'include',
                 });
                 if (!response.ok) {
