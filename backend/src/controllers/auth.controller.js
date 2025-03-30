@@ -28,9 +28,8 @@ const register = async (req, res, next) => {
             name: registerData.name,  // Ensure this is correctly referenced
             email: registerData.email,
             phone: registerData.phone,
+            grade: registerData.grade,
             password: hashedPassword,
-            gender: registerData.gender,
-            dob: registerData.dob
         });
 
         // Save user
@@ -71,7 +70,7 @@ const login = async (req, res, next) => {
         // Create an empty User instance to use its find method
         const userInstance = new User({});
         const users = await userInstance.find({ email });
-        
+ 
         // Check if user exists
         if (users.length === 0) {
             return res.status(400).json({ success: false, message: `User not found.` });
@@ -110,6 +109,7 @@ const login = async (req, res, next) => {
             message: "User logged in successfully.", 
             user: userWithoutPassword 
         });
+
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
     }
@@ -141,7 +141,7 @@ const getUserDetails = async (req, res, next) => {
         const user = doesUserExist[0];
         const { password, ...userWithoutPassword } = user;
 
-        res.status(200).json({ success: true, user });
+        res.status(200).json({ success: true, userWithoutPassword });
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
     }
