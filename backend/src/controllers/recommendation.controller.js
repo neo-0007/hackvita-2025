@@ -9,7 +9,7 @@ if (!API_KEY) {
     process.exit(1);
 }
 
-const genAI = new GoogleGenerativeAI(API_KEY);
+const genAI = new GoogleGenerativeAI("AIzaSyB0doojTBRwnYA3tUVY3oFUwi6sg0jY6gk");
 
 async function getRecommendationResponse(userId, topic) {
     try {
@@ -38,7 +38,7 @@ async function getRecommendationResponse(userId, topic) {
         - Do **not** include explanations or extra text.
         - Limit recommendations to **3-4 videos max**.
         - Each video should only have 'title' and 'link' fields.
-
+        
         Example response format:
         [
             {"title": "Video 1", "link": "https://..."},

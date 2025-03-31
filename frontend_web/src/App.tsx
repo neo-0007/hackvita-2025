@@ -8,6 +8,7 @@ import Landing from './pages/Landing';
 import { useUser } from './context/user.context';
 import Course from './pages/Course';
 import Dashboard from './pages/Dashboard';
+import Dash2 from './pages/Dash2';
 
 
 function App() {
@@ -45,7 +46,7 @@ function App() {
     <>
     <Router>
       <Routes>
-        <Route path="/" element={isAuthenticated ? <Dashboard /> : <Landing />} />
+        <Route path="/" element={isAuthenticated ? <Dash2 /> : <Landing />} />
         <Route path="/user/profile" element={<Profile />} />
         <Route path="/user/register" element={<Register />} />
         <Route path="/user/login" element={<Login />} />

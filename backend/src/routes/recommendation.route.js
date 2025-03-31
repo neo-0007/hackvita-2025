@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getRecommendationResponse } = require('../controllers/recommendation.controller.js');
 
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const { userId, topic } = req.body; // Use req.body for POST, but req.query for GET
 

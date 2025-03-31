@@ -3,7 +3,7 @@ const { getSummary, getFeedbackResult } = require("../controllers/summary.contro
 
 const router = express.Router();
 
-router.get("/summarize", getSummary);
+router.post("/summarize", getSummary);
 router.get("/feedback", getFeedbackResult);
 
 
