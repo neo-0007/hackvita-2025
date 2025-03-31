@@ -7,8 +7,8 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEN_AI_API_KEY });
 // let questionsSets = []
 
 const users = [
-    { id: 'abc123', name: "Alice", interests: ["technology", "AI", "coding"], watchHistory: ["Intro to AI", "Building Chatbots"], weakTopics: ["DSA", "Linear Algebra"], avg_time:2.5, avg_quiz_score:5, avg_confidence_score:8},
-    { id: 'xyz123', name: "Bob", interests: ["gaming", "streaming", "VR"], watchHistory: ["Top 10 VR Games", "Best Streaming Setups"], weakTopics: ["Game Engine", "Mathematics"], avg_time:1.5, avg_quiz_score:3, avg_confidence_score:5},
+    { id: 'abc123', name: "Alice", interests: ["technology", "AI", "coding"], watchHistory: ["Intro to AI", "Building Chatbots"], weakTopics: ["DSA", "Linear Algebra"], avg_time:2.5, avg_quiz_score:5, avg_confidence_score:8, total_quiz_played:1},
+    { id: 'xyz123', name: "Bob", interests: ["gaming", "streaming", "VR"], watchHistory: ["Top 10 VR Games", "Best Streaming Setups"], weakTopics: ["Game Engine", "Mathematics"], avg_time:1.5, avg_quiz_score:3, avg_confidence_score:5, total_quiz_played:1},
 ];
 
 const get_10_questions = async (req, res) => {
@@ -182,9 +182,13 @@ const update_user_capabilities = async (req, res)=> {
         return res.status(400).json({success:false, message: "body does not contain all required fields"})
     }
 
+    // console.log(user)
+
+    // console.log({total_time, avg_time, total_score, confidence_score})
+
     user.avg_quiz_score = (user.total_quiz_played*user.avg_quiz_score+total_score)/(user.total_quiz_played+1);
     
-    user.avg_time = (10*user.total_quiz_played*user.avg_time+avg_time)/(10*(user.total_quiz_played+1));
+    user.avg_time = (user.total_quiz_played*user.avg_time+avg_time)/((user.total_quiz_played+1));
 
     user.avg_confidence_score = (user.total_quiz_played*user.avg_confidence_score+confidence_score)/(user.total_quiz_played+1);
 
@@ -193,6 +197,7 @@ const update_user_capabilities = async (req, res)=> {
     user.total_quiz_played = user.total_quiz_played+1;
 
 
+    // console.log(user)
     /*code needed to update user in database
 
 
