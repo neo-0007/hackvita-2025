@@ -208,45 +208,69 @@ const Course = () => {
         }
     };
 
-    const handleNextQuestion = () => {
-        // Record time for the current question
-        const currentTime = Date.now();
-        const timeTaken = currentTime - questionStartTime;
-        setQuestionTimes((prev) => [...prev, timeTaken]);
-
-        if (selectedQuestion < questions.length - 1) {
-            // Move to next question and reset timer
-            setSelectedQuestion(selectedQuestion + 1);
-            setSelectedAnswer(null);
-            setShowExplanation(false);
-            setQuestionStartTime(Date.now());
-        } else {
-            // Last question finished, calculate results
-            const totalTime = [...questionTimes, timeTaken].reduce((acc, t) => acc + t, 0);
-            const avgTime = totalTime / questions.length;
-            const confidenceScore = (score / questions.length) * 100;
-            const overallSubtopicDuration = Date.now() - subtopicStartTime;
-            setSubtopicDuration(overallSubtopicDuration)
-            console.log("Quiz Results:");
-            console.log("Total Time (ms):", totalTime);
-            console.log("Average Time per Question (ms):", avgTime);
-            console.log("Total Score:", score);
-            console.log("Confidence Score (%):", confidenceScore);
-            console.log("overall subtopic duration: ",overallSubtopicDuration)
-
-            // Act as next subtopic button:
-            // Find the current topic's subtopics and select the next one if it exists.
-            const currentRoadmap = roadmaps.find(r => r.Topic_Name === selectedTopic);
-            if (currentRoadmap) {
-                const currentIndex = currentRoadmap.subtopics.findIndex(s => s === selectedSubtopic);
-                if (currentIndex !== -1 && currentIndex < currentRoadmap.subtopics.length - 1) {
-                    setSelectedSubtopic(currentRoadmap.subtopics[currentIndex + 1]);
-                } else {
-                    console.log("No more subtopics in this topic.");
+    const handleNextQuestion = async () => {
+        try {
+            // Record time for the current question
+            const currentTime = Date.now();
+            const timeTaken = currentTime - questionStartTime;
+            setQuestionTimes((prev) => [...prev, timeTaken]);
+    
+            if (selectedQuestion < questions.length - 1) {
+                // Move to next question and reset timer
+                setSelectedQuestion((prev) => prev + 1);
+                setSelectedAnswer(null);
+                setShowExplanation(false);
+                setQuestionStartTime(Date.now());
+            } else {
+                // Last question finished, calculate results
+                const totalTime = [...questionTimes, timeTaken].reduce((acc, t) => acc + t, 0);
+                const avgTime = totalTime / questions.length;
+                const confidenceScore = (score / questions.length) * 100;
+                const overallSubtopicDuration = Date.now() - subtopicStartTime;
+                setSubtopicDuration(overallSubtopicDuration);
+    
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/auth/update`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        total_time_questions: totalTime,
+                        avg_time_questions: avgTime,
+                        total_score: score,
+                        confidence_score: confidenceScore,
+                        total_duration_in_a_subtopic: overallSubtopicDuration,
+                    }),
+                    credentials: "include",
+                });
+    
+                if (!response.ok) {
+                    throw new Error("Failed to update quiz results");
                 }
+    
+                const responseJson = await response.json();
+                console.log("Server Response:", responseJson);
+    
+                console.log("Quiz Results:");
+                console.log("Total Time (ms):", totalTime);
+                console.log("Average Time per Question (ms):", avgTime);
+                console.log("Total Score:", score);
+                console.log("Confidence Score (%):", confidenceScore);
+                console.log("Overall Subtopic Duration (ms):", overallSubtopicDuration);
+    
+                // Act as next subtopic button:
+                const currentRoadmap = roadmaps.find((r) => r.Topic_Name === selectedTopic);
+                if (currentRoadmap) {
+                    const currentIndex = currentRoadmap.subtopics.findIndex((s) => s === selectedSubtopic);
+                    if (currentIndex !== -1 && currentIndex < currentRoadmap.subtopics.length - 1) {
+                        setSelectedSubtopic(currentRoadmap.subtopics[currentIndex + 1]);
+                    } else {
+                        console.log("No more subtopics in this topic.");
+                    }
+                }
+                // Reset quiz state
+                setShowQuestions(false);
             }
-            // Reset quiz state
-            setShowQuestions(false);
+        } catch (error) {
+            console.error("Error handling next question:", error);
         }
     };
 

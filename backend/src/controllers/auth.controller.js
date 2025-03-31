@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 const User = require("../models/user.model");
 const { generateTokens, storeRefreshToken } = require("../utils/jwtToken");
+const db = require("../config/pgpool");
 dotenv.config();
 
 const register = async (req, res, next) => {
@@ -115,6 +116,65 @@ const login = async (req, res, next) => {
     }
 };
 
+const updateUserCapabilities = async (req, res, next) => {
+    try {
+      const {
+        total_time_questions,
+        avg_time_questions,
+        total_score,
+        confidence_score,
+        total_duration_in_a_subtopic,
+      } = req.body;
+  
+      const userId = req.user.id;
+  
+      const newAvgTimeSpent = avg_time_questions;
+      const newAvgQuizScore = total_score;
+      const newAvgConfidenceScore = confidence_score;
+      const newAdaptabilityScore =
+        total_time_questions > 0 ? total_duration_in_a_subtopic / total_time_questions : 0;
+      const newEnglishProficiency = confidence_score >= 80 ? 9 : 6; 
+  
+      const query = `
+        UPDATE users
+        SET avg_time_spent = $1,
+            avg_quiz_score = $2,
+            avg_confidence_score = $3,
+            adaptability_score = $4,
+            english_proficiency = $5
+        WHERE id = $6
+        RETURNING *;
+      `;
+  
+      const values = [
+        newAvgTimeSpent,
+        newAvgQuizScore,
+        newAvgConfidenceScore,
+        newAdaptabilityScore,
+        newEnglishProficiency,
+        userId,
+      ];
+  
+      // Execute the update query
+      const result = await db.query(query, values);
+  
+      return res.status(200).json({
+        success: true,
+        user: result.rows[0],
+        message: "User capabilities updated successfully",
+      });
+    } catch (error) {
+      console.error("Error updating user capabilities:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Error updating user capabilities",
+        error: error.message,
+      });
+    }
+  };
+  
+  
+
 const profile = async (req, res, next) => {
     try {
         const { user } = req;
@@ -157,4 +217,4 @@ const logout = async (req, res, next) => {
     }
 }
 
-module.exports = { register, login, getUserDetails, profile, logout };
+module.exports = { register, login, getUserDetails, updateUserCapabilities, profile, logout };
