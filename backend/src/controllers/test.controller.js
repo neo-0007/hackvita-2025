@@ -13,6 +13,7 @@ const users = [
 
 const get_10_questions = async (req, res) => {
     const {topic, userId} = req.body;
+    console.log(req.body)
     const user = users.find((u) => u.id === userId);
     if (!user) {
         console.log( "User not found." );
@@ -125,7 +126,7 @@ catch(err)
 
 const update_user_topics = async (req,res, next)=>{
     try{
-    const {userId, weak_topics, strong_topics} = req.body;
+    const {userId, weak_topics, strong_topics, score} = req.body;
     // const userId = 'abc123'
     // const weak_topics=['Calculus', 'Linear Algebra']
     // const strong_topics=['DSA']
