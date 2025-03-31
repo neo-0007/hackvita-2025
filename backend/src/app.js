@@ -39,9 +39,9 @@ app.use(express.urlencoded({extended:false}));
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/roadmap", roadmapRouter);
 app.use("/api/v1/test", testRouter);
-app.use('/', recommendationRouter);
+app.use('/api/v1/recommendation', recommendationRouter);
 app.use('/', trendingRouter);
-app.use("/",summaryRouter);
+app.use("/api/v1/summary",summaryRouter);
 
 
 module.exports = app;

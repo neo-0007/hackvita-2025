@@ -1,19 +1,20 @@
 const { GoogleGenAI, Type } = require("@google/genai");
 const dotenv = require("dotenv");
+const User = require("../models/user.model");
 dotenv.config();
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEN_AI_API_KEY });
 
 // let questionsSets = []
 
-const users = [
-    { id: 'abc123', name: "Alice", interests: ["technology", "AI", "coding"], watchHistory: ["Intro to AI", "Building Chatbots"], weakTopics: ["DSA", "Linear Algebra"] },
-    { id: 'xyz123', name: "Bob", interests: ["gaming", "streaming", "VR"], watchHistory: ["Top 10 VR Games", "Best Streaming Setups"], weakTopics: ["Game Engine", "Mathematics"] },
-];
+// const users = [
+//     { id: 'abc123', name: "Alice", interests: ["technology", "AI", "coding"], watchHistory: ["Intro to AI", "Building Chatbots"], weakTopics: ["DSA", "Linear Algebra"] },
+//     { id: 'xyz123', name: "Bob", interests: ["gaming", "streaming", "VR"], watchHistory: ["Top 10 VR Games", "Best Streaming Setups"], weakTopics: ["Game Engine", "Mathematics"] },
+// ];
 
 const get_10_questions = async (req, res) => {
     const {topic, userId} = req.body;
-    const user = users.find((u) => u.id === userId);
+    const user = await new User({}).findById(userId)
     if (!user) {
         console.log( "User not found." );
         return res.status(404).json({success:false, response: "User not found"})
@@ -93,7 +94,7 @@ const get_10_questions = async (req, res) => {
 try{
     const response = await ai.models.generateContent({
         model: 'gemini-2.0-flash',
-        contents: `You are a multiple choice question generator that generates 10 questions related to a given topic. You first generate 5 questions based on the main topic and then generate remaining 5 questions slightly related to the weak topics of the player but without deviating from the main topic provided. Now generate 10 multiple choice questions on the main topic "${topic}" for a player with weak topics ${user.weakTopics.join(", ")}.`,
+        contents: `You are a multiple choice question generator that generates 10 questions related to a given topic. You first generate 5 questions based on the main topic and then generate remaining 5 questions slightly related to the weak topics of the player but without deviating from the main topic provided. Now generate 10 multiple choice questions on the main topic "${topic}" for a player with weak topics ${user.weakTopics}`,
         config: {
             responseMimeType: 'application/json',
             responseSchema: resSchema,
@@ -118,7 +119,7 @@ try{
 catch(err)
 {
     console.log("generating questions gemini api calling error :\n", err.message)
-    res.send(500).json({success:false, message:err.message})
+    res.status(500).json({success:false, message:err.message})
 }
 }
 
