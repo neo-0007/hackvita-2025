@@ -168,7 +168,52 @@ const update_user_topics = async (req,res, next)=>{
     }
 }
 
+const update_user_capabilities = async (req, res)=> {
+    try{
+    const {userId, total_time, avg_time, total_score, confidence_score} = req.body
+
+    const user = users.find((u) => u.id === userId);
+    if (!user) {
+        console.log( "User not found." );
+        return res.status(404).json({success:false, response: "User not found"})
+    }
+
+    if(total_time===undefined || avg_time===undefined || total_score===undefined || confidence_score===undefined) {
+        return res.status(400).json({success:false, message: "body does not contain all required fields"})
+    }
+
+    // console.log(user)
+
+    // console.log({total_time, avg_time, total_score, confidence_score})
+
+    user.avg_quiz_score = (user.total_quiz_played*user.avg_quiz_score+total_score)/(user.total_quiz_played+1);
+    
+    user.avg_time = (user.total_quiz_played*user.avg_time+avg_time)/((user.total_quiz_played+1));
+
+    user.avg_confidence_score = (user.total_quiz_played*user.avg_confidence_score+confidence_score)/(user.total_quiz_played+1);
+
+    
+
+    user.total_quiz_played = user.total_quiz_played+1;
 
 
-module.exports = {get_10_questions, update_user_topics};
+    // console.log(user)
+    /*code needed to update user in database
+
+
+
+
+
+
+    */
+    return res.status(200).json({success:true, message: "updated user capabilities successfully"})
+}
+catch(err)
+{
+    console.log("erro in updating user capabilities :\n", err.message)
+    return res.status(500).json({success:false, message:err.message})
+}
+}
+
+module.exports = {get_10_questions, update_user_topics, update_user_capabilities};
 
