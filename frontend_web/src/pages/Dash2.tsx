@@ -11,7 +11,14 @@ export default function Dash2() {
     navigate(`/course?topic=${encodeURIComponent(topic)}`);
   };
 
+
+
   return (
+    <>
+    <div className='fixed'>
+    <Navbar />
+    </div>
+    
     <div className="flex items-center justify-center min-h-screen w-full bg-white p-6">
       <div className="w-full max-w-md text-left">
         <h1 className="text-3xl font-bold text-indigo-600 mb-2">turing.ai</h1>
@@ -48,5 +55,58 @@ export default function Dash2() {
         </div>
       </div>
     </div>
+    </>
   );
 }
+
+
+import { FaSignOutAlt} from "react-icons/fa";
+
+
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  return (
+    <nav className=" dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          {/* Logo */}
+          <div className="flex items-center">
+            
+          </div>
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex space-x-8 items-center">
+            
+
+            {/* Profile Dropdown (Placeholder) */}
+            <div className="relative">
+            <button 
+                onClick={async () => {
+                  try {
+                    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/auth/logout`, {
+                      method: "POST",
+                      credentials: "include",
+                    });
+                    if (!response.ok) {
+                      throw new Error("Failed to fetch user");
+                    }
+                    if (response.ok) {
+                      await navigate('/'); 
+                      window.location.reload();
+                    }
+                  } catch (error) {
+                    alert("Failed to logout");
+                  }
+                }} 
+                className="flex items-center space-x-2 text-red-600 dark:text-white hover:text-red-400">
+                <FaSignOutAlt className="text-lg" />
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+};

@@ -44,8 +44,11 @@ const register = async (req, res, next) => {
         const { accessToken, refreshToken } = await generateTokens(insertedUserWithoutPassword);
         storeRefreshToken(insertedUser, refreshToken)
 
+        // Store access token in the database
+        await new User({}).updateById(user.id, { accesstoken: accessToken });
+
         res
-        .cookie("accessToken", accessToken, {
+        .cookie("accessToken",  await bcrypt.hash(accessToken, salt), {
             httpOnly: true, // prevent XSS attacks
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict", // prevents CSRF attack
@@ -91,9 +94,13 @@ const login = async (req, res, next) => {
 
         const { accessToken, refreshToken } = await generateTokens(userWithoutPassword);
         storeRefreshToken(userWithoutPassword, refreshToken)
+
+        const salt = await bcrypt.genSalt(10);
+        // Store access token in the database
+        await new User({}).updateById(user.id, { accesstoken: accessToken });
         
         res
-        .cookie("accessToken", accessToken, {
+        .cookie("accessToken", await bcrypt.hash(accessToken, salt), {
             httpOnly: true, // prevent XSS attacks
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict", // prevents CSRF attack

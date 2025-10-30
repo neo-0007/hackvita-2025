@@ -53,7 +53,7 @@ const Register = () => {
         {/* Left Image Section */}
         <div className="md:w-1/2 flex justify-center items-center mb-6 md:mb-0">
           <img
-            src="https://thumbs.dreamstime.com/b/cute-pink-brain-character-dumbbell-mental-health-concept-training-exercise-vector-illustration-flat-style-191722654.jpg"
+            src={"/image.png"}
             alt="Register"
             className="w-60 h-60 md:w-80 md:h-80 object-cover rounded-lg"
           />

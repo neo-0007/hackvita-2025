@@ -414,7 +414,7 @@ const Course = () => {
                 ) : (
                     <div className="flex flex-col md:flex-row gap-6">
                         {/* Left Panel - Roadmap */}
-                        <div className="md:w-1/3 bg-white rounded-xl shadow-md overflow-hidden">
+                        <div className="md:w-1/3 bg-white rounded-xl shadow-md overflow-auto h-screen">
                             <div className="p-4 bg-blue-600 text-white">
                                 <h2 className="text-xl font-semibold">Learning Path</h2>
                             </div>
@@ -454,7 +454,7 @@ const Course = () => {
                         </div>
 
                         {/* Right Panel - Content / Quiz / Videos */}
-                        <div className="md:w-2/3 bg-white rounded-xl shadow-md overflow-hidden">
+                        <div className="md:w-2/3 bg-white rounded-xl shadow-md overflow-auto h-screen">
                             {contentLoading ? (
                                 <LoadingSpinner />
                             ) : showQuestions ? (
